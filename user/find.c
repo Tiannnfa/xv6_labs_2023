@@ -35,6 +35,7 @@ void find(char *curr_path, char *target) {
   switch (st.type) {
 
   case T_FILE:
+  {
     char *f_name = basename(curr_path);
     int match = 1;
     if (f_name == 0 || strcmp(f_name + 1, target) != 0) {
@@ -44,7 +45,7 @@ void find(char *curr_path, char *target) {
       printf("%s\n", curr_path);
     close(fd);
     break;
-
+  }
   case T_DIR:
     // make the next level pathname
     memset(buf, 0, sizeof(buf));

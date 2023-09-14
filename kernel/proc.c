@@ -126,6 +126,9 @@ found:
   memset(&p->context, 0, sizeof(p->context));
   p->context.ra = (uint64)forkret;
   p->context.sp = p->kstack + PGSIZE;
+  
+  //No trace by default
+  p->tracemask = 0;
 
   return p;
 }
@@ -276,6 +279,8 @@ fork(void)
   np->sz = p->sz;
 
   np->parent = p;
+  //Same tracemask as parent's
+  np->tracemask = p->tracemask;
 
   // copy saved user registers.
   *(np->trapframe) = *(p->trapframe);
@@ -692,4 +697,20 @@ procdump(void)
     printf("%d %s %s", p->pid, state, p->name);
     printf("\n");
   }
+}
+
+uint64
+count_free_proc(void) {
+  struct proc *p;
+  uint64 count = 0;
+  for(p = proc; p < &proc[NPROC]; p++) {
+    // 此处不一定需要加锁, 因为该函数是只读不写
+    // 但proc.c里其他类似的遍历时都加了锁, 那我们也加上
+    acquire(&p->lock);
+    if(p->state != UNUSED) {
+      count += 1;
+    }
+    release(&p->lock);
+  }
+  return count;
 }
