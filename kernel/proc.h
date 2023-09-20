@@ -104,4 +104,5 @@ struct proc {
   struct inode *cwd;           // Current directory
   char name[16];               // Process name (debugging)
   uint64 tracemask;            // The syscalls this process traces
+  pagetable_t kpagetable;      // The kernel pagetable per process
 };
